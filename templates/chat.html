@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>chat</title>
+      <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+        <!-- Custom css for prelogin pages -->
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main_style.css') }}">
+</head>
+<body>
+    <nav>
+        
+    </nav>
+	<div id="main">
+        <nav id="sidebar">
+           <h4>ROOMS</h4>
+           {% for room in rooms %}
+            <p class="select-room">{{ room }}</p>
+           {% endfor %} 
+        </nav>
+        <div id="rightside">
+            <div id="chat">
+                
+            </div>
+        <form id="form">
+            <input  type="text"  id="message" />
+             <button id="button">submit</button>
+        </form>
+        </div>
+        
+    </div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+
+            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+             let username = `{{ username }}`;
+            let room = "FRIENDS AND FAMILY";
+            joinRoom("FRIENDS AND FAMILY");
+
+            socket.on('message', data => {
+                const p = document.createElement('p');
+                const span = document.createElement('span');
+                 const span_time = document.createElement('span');
+                const br = document.createElement('br');
+
+            if(data.username){
+                span.innerHTML = data.username;
+                span_time.innerHTML = data.time_stamp;
+                p.innerHTML = span.outerHTML + br.outerHTML + data.msg + br.outerHTML + span_time.outerHTML;
+                document.querySelector('#chat').append(p);  
+            } 
+            else{
+                printSysMsg(data.msg);
+            }   
+               
+                  
+            });
+            
+            
+            document.querySelector('#button').onclick = () =>{
+                socket.send({'msg' :document.querySelector('#message').value, 'username': username, 'room': room});
+                 document.querySelector('#message').value = '';
+                 return false;
+
+             };
+
+             document.querySelectorAll('.select-room').forEach(p =>{
+                p.onclick = () => {
+                    let newRoom = p.innerHTML;
+                    if(newRoom == room){
+                        msg = `You are already in the ${room} room.`
+                        printSysMsg(msg);
+                    }
+                    else{
+                        leaveRoom(room);
+                        joinRoom(newRoom);
+                        room = newRoom;
+                    }
+                };
+             });
+
+            function leaveRoom(room){
+                socket.emit('leave', {'username':username, 'room':room});
+            };
+
+            function joinRoom(room){
+                socket.emit('join', {'username': username, 'room': room});
+                document.querySelector('#chat').innerHTML = ''
+
+                document.querySelector('#message').focus();
+            };
+            function printSysMsg(msg){
+                const p = document.createElement('p');
+                p.innerHTML = msg;
+                document.querySelector('#chat').append(p);
+            }
+    }); 
+    
+    </script>
+
+</body>
+</html>

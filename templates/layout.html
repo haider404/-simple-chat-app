@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	{% block title %}
+	<title></title>
+	{% endblock %}
+	  <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+        <!-- Custom css for prelogin pages -->
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main_style.css') }}">
+</head>
+<body>
+	{% with messages = get_flashed_messages() %}
+	{% if messages %}
+	{% for msg in messages %}
+		<p>{{ msg }}</p>
+	{% endfor %}	
+	
+
+	{% endif %}
+	{% endwith %}
+
+
+	{% block content %}
+	{% endblock %}
+</body>
+</html>

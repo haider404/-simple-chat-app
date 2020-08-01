@@ -1,0 +1,20 @@
+{% from "form_helper.html" import display_Field %}
+
+{% extends "layout.html" %}
+{% block title %}Registration{% endblock %} 
+
+{% block content %}
+<form action="{{ url_for('index') }}" method="post">
+	
+	{{ display_Field(form.username, 'Username', autocomplete="off", autofocus="on") }}
+	{{ display_Field(form.password, 'Password') }}
+	{{ display_Field(form.confirm_pswd, 'Retype password') }}
+
+
+	<div>
+		{{ form.submit_button }}
+	</div>
+	
+	{{ form.csrf_token }}
+</form>
+{% endblock %}	
